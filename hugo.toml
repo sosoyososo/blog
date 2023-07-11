@@ -1,0 +1,10 @@
+baseURL = 'http://blog.karsa.info/'
+languageCode = 'en-us'
+title = "Karsa Wang 's Blog"
+theme = 'smigle'
+appendPort = false
+[params]
+  author = 'Karsa Wang'
+  description = "记录一些问题，也许对其他人也有所助益"
+  subtitle = "记录一些问题，也许对其他人也有所助益"
+
