@@ -6,3 +6,4 @@ public/
 .gitmodules 
 themes/
 .hugo_build.lock
+nohup.out
