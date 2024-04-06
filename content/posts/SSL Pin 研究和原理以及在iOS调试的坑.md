@@ -21,7 +21,7 @@ SSL pin 通过在客户端内置公钥证书，和服务端下发的证书做比
 
 iOS 中用 NSURLSession 的时候，指定一个实现了`URLSession:didReceiveChallenge:completionHandler`方法的 delegate，就可以在回调方法里，进行自定义的证书比对过程。
 整个过程相对比较麻烦，所以现在大家用的比较多的是通过一个开源库`TrustKit`进行比对。
-TrustKit 通过配置域名和与之对应的公钥证书签名，在 SSL 通道建立的时候，获取到证书链，比对证书链中每个证书，一旦有比对成功的，就算是成功，如果所有的都比对失败，就算是 SSL pin 失败了。SSL pin 失败，会打断 ssl 通道的建立，所以后续 ssl 通道上的 http 请求也不会发生。
+TrustKit 通过配置域名和与之对应的公钥证书签名，<strike>(这里后续的描述是有问题的，看后续更新中“Public Key Pinning 是怎么实现的”这段)在 SSL 通道建立的时候，获取到证书链，比对证书链中每个证书，一旦有比对成功的，就算是成功，如果所有的都比对失败，就算是 SSL pin 失败了。SSL pin 失败，会打断 ssl 通道的建立，所以后续 ssl 通道上的 http 请求也不会发生。</strike>
 
 ## React Native 怎么用 ssl pin
 
@@ -38,3 +38,22 @@ React Native 的网络请求是通过 React-RCTNetworking 这个库来保证的�
 ## 后记
 
 原因找到后很简单，但过程值得回味。怀疑权威是对的，但在怀疑权威之前，最后先验证自己是否正确，顺序搞错，就是这次精力消耗掉事故的本质原因。
+
+
+# 更新
+在获取到更多信息之后意识到ssl pinning也是分类的，我们上文所说的逻辑其实是属于 `Public Key Pinning `, 在[rfc 7469](https://datatracker.ietf.org/doc/html/rfc7469#section-1)中进行描述。
+
+但有些服务，比如cloudflare，是不支持HTTP public key pinning (HPKP)的，这时候有另外一种ssl pinning，直接使用证书进行ssl pinning，叫做 `Certificate pinning `。
+
+## 之前理解的问题
+接触 public key pinnig的时候是在iOS体系内部，下意识的以为ssl pinning是发生在ssl链接建立的时候，后来发现cloudflare设置ssl pinning限制之后，如果客户端限制不对，是返回了403错误的。那么意味着ssl pinning是http层面返回的，并不是最早以为的ssl层面，那么之前的理解可能就不那么正确。
+
+## Public Key Pinning 是怎么实现的
+根据rfc文档描述， 服务端把ssl证书公钥的哈希值通过response header Public-Key-Pins 传回给客户端，客户端首次连接服务端的时候，检查整个证书链上所有证书公钥的哈希值，与本地预存的hash值进行对比，如果任何一个对比成功即为ssl pinning成功，否则ssl pinning失败。后续请求中，会通过之前匹配的公钥，与服务端返回的证书链进行对比，如果比对失败ssl pinning也会失败。
+
+## 两者有何区别
+HPKP 其实就是从证书里取出了一个key，然后进行对比。Certificate pinning是直接对比证书。双方没孰优孰劣的对比，在不同情况下有不同的适用场景。
+
+HPKP需要对证书进行额外处理，容易出现失误，但因为只对比hash值，相对来说更简单；HPKP可以有效抵御中间人攻击，避免CA问题。同时当证书变化的时候，只要hash值不变HPKP就不会失效。
+
+cloudflare就是因为证书经常发生变化，所以禁用了HPKP，强行要求进行Certificate pinning，避免操作失误导致服务不可用。
