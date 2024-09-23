@@ -2,6 +2,7 @@
 
 title: "Xcode调试iOS时候证书配置的一个坑"
 date: 2024-09-24T02:09:32+08:00
+tags: ['ios','xcode']
 
 ---
 
