@@ -1,6 +1,6 @@
 ---
 
-title: "XCode调试iOS时候证书配置的一个坑"
+title: "Xcode调试iOS时候证书配置的一个坑"
 date: 2024-09-24T02:09:32+08:00
 
 ---
@@ -17,6 +17,6 @@ attach failed (Not allowed to attach to process.  Look in the console messages (
 
 ![报错截图](https://res.karsa.info/files/file/server/pay-record-icon/2024/September/24/1727115080501333189)
 
-先是网络上搜索了一圈，没有发现什么有用线索，之后有一瞬想到证书配置。我配置这个app的证书时候配置错了，在debug模式下使用的distrution的证书和对应的provisioning profile。这个问题我是知道的，但之前一段时间一直都是RN和Capacitor代码，跑起来打包上就抛弃xcode了，也没发现有什么问题，好了现在知道了。
+先是网络上搜索了一圈，没有发现什么有用线索，之后有一瞬想到证书配置。我配置这个app的证书时候配置错了，在debug模式下使用的distrution的证书和对应的provisioning profile。这个问题我是知道的，但之前一段时间一直都是RN和Capacitor代码，跑起来打包上就抛弃Xcode了，也没发现有什么问题，好了现在知道了。
 
 ![错误原因](https://res.karsa.info/files/file/server/pay-record-icon/2024/September/24/1727115873060040526)
