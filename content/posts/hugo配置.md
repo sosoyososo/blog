@@ -8,6 +8,8 @@ date: 2023-07-10T18:01:46+08:00
 ### 版本问题
 linux下特别是ubuntu下，apt安装的hugo版本比较旧，记得使用github的release里面，安装最新的版本。
 
+<!--more--> 
+
 ### 子页面路径上带有端口号的问题
 默认情况下，对子页面的引用会是 ```{baseURL:port/pagePath}```的形式，如果hugo服务是通过nigix反向代理到80端口的，我们通常不想让port出现在这里，这时候需要使用 ```--appendPort=false``` 这个参数来避免这个问题。 
 

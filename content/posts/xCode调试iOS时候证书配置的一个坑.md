@@ -15,6 +15,8 @@ Could not attach to pid : “20860”
 attach failed (Not allowed to attach to process.  Look in the console messages (Console.app), near the debugserver entries, when the attach failed.  The subsystem that denied the attach permission will likely have logged an informative message about why it was denied.)
 ```
 
+<!--more--> 
+
 
 ![报错截图](https://res.karsa.info/files/file/server/pay-record-icon/2024/September/24/1727115080501333189)
 

@@ -3,6 +3,7 @@ title: "对比两个使用ARKit追踪眼睛注视点的方案"
 date: 2024-11-28T15:10:12+08:00
 draft: true
 ---
+
 ## 引用来源
 
 [https://shiru99.medium.com/eye-tracking-with-arkit-ios-part-ii-2723f9bfe04e](https://shiru99.medium.com/eye-tracking-with-arkit-ios-part-ii-2723f9bfe04e)
@@ -16,6 +17,8 @@ draft: true
 使用ARKit追踪眼睛注视点，主要是使用  ARFaceTrackingConfiguration 、ARSession、 ARSCNView，主要的逻辑是ARSession提供了运行ARKit的环境，ARFaceTrackingConfiguration 告诉ARSession想要识别人脸，我们可以监听ARSession回调函数来获取人脸识别的结果，比如脸部位置，眼睛位置，眼睛注视点。而ARSCNView本身携带了ARSession，他继承了[SceneKit](https://developer.apple.com/documentation/scenekit?language=objc)的SCNView 用来展示相机拍摄到的内容和ARKit识别到的结果。
 
 ARSession的回调会告诉我们识别到脸部的位置，眼睛的位置，注视点的位置，那么我们需要做的就是在手机屏幕上显示这个注视点，逻辑上很容易理解。那么难点在哪里？
+
+<!--more--> 
 
 ## 理解难点
 
