@@ -57,7 +57,13 @@ date: 2025-06-05T17:45:08+08:00
   - aria2-pro 开启 RPC 时务必设置 `token` 防止滥用。  
   - Navidrome 可设置账户登录，建议启用。
 
----
+## 📱 支持手机播放：推荐「音流」
+
+你可以通过手机直接访问并播放 Navidrome 中的音乐。推荐使用：
+
+### 🎧 [音流](https://music.aqzscn.cn/)
+- 专为 Navidrome 打造的开源 Subsonic 客户端
+
 
 ## ✅ 总结
 
