@@ -1,9 +1,6 @@
 ---
 title: "About"
-date: 2025-07-10T17:22:40+08:00
-layout: 'single'
-slug: "about"
-url: "/about/"
+date: 2025-06-07T17:33:12+08:00
 ---
 
-Here is Karsa Wang 's Blog;
+Here's Karsa's Blog

@@ -1,4 +1,4 @@
-themes/
+themes/*
 resources/
 nohup.out
 public/
