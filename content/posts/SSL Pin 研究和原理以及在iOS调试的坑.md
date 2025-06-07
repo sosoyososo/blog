@@ -47,6 +47,9 @@ React Native 的网络请求是通过 React-RCTNetworking 这个库来保证的�
 
 但有些服务，比如cloudflare，是不支持HTTP public key pinning (HPKP)的，这时候有另外一种ssl pinning，直接使用证书进行ssl pinning，叫做 `Certificate pinning `。
 
+这是AI总结的HTTP Public Key Pinning (HPKP) 与 Certificate Pinning（证书钉扎） 的区别。
+https://res.karsa.info/files/file/server/pay-record-file/2025/June/7/1749291812860107943
+
 ## 之前理解的问题
 接触 public key pinnig的时候是在iOS体系内部，下意识的以为ssl pinning是发生在ssl链接建立的时候，后来发现cloudflare设置ssl pinning限制之后，如果客户端限制不对，是返回了403错误的。那么意味着ssl pinning是http层面返回的，并不是最早以为的ssl层面，那么之前的理解可能就不那么正确。
 
