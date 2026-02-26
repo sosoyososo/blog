@@ -1,0 +1,23 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="记录一些问题，也许对其他人也有所助益"><title>Xcode调试iOS时候证书配置的一个坑 | Karsa Wang 's Blog</title><link rel=stylesheet href=/css/reset.css><link rel=stylesheet href=/css/font.css><link rel=stylesheet href=/css/smigle.css><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/site.webmanifest><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"></head><body><div id=root><header><div id=brand><a class=icon-link href=https://blog.karsa.info/><img class=icon src=/images/brandIcon.svg></a><div class=text><a href=https://blog.karsa.info/><h1>Karsa Wang 's Blog</h1></a><h3>记录一些问题，也许对其他人也有所助益</h3></div></div><nav><a href=/><b>Home</b></a>
+|
+<a href=/posts><b>Posts</b></a>
+|
+<a href=/tags><b>Tags</b></a>
+|
+<a href=/about><b>About</b></a></nav><hr></header><div id=content><main><article><h1 class=title>Xcode调试iOS时候证书配置的一个坑</h1><div class=post-meta><strong><span>Posted on</span>
+<time>2024-09-24 02:09:32</time>
+</strong><span>• 51 words</span>
+<span>• 1 minute read</span><div><span>Tags:</span>
+<a href=/tags/ios>ios</a>,
+<a href=/tags/xcode>xcode</a></div></div><div class=content><p>调试iOS应用的时候，编译成功，安装app到设备也成功，启动app也成功，但Xcode自动结束调试，报错如下：</p><pre tabindex=0><code>Could not attach to pid : “20860”
+
+attach failed (Not allowed to attach to process.  Look in the console messages (Console.app), near the debugserver entries, when the attach failed.  The subsystem that denied the attach permission will likely have logged an informative message about why it was denied.)
+</code></pre><p><img src=https://res.karsa.info/files/file/server/pay-record-icon/2024/September/24/1727115080501333189 alt=报错截图></p><p>先是网络上搜索了一圈，没有发现什么有用线索，之后有一瞬想到证书配置。我配置这个app的证书时候配置错了，在debug模式下使用的distrution的证书和对应的provisioning profile。这个问题我是知道的，但之前一段时间一直都是RN和Capacitor代码，跑起来打包上就抛弃Xcode了，也没发现有什么问题，好了现在知道了。</p><p><img src=https://res.karsa.info/files/file/server/pay-record-icon/2024/September/24/1727115873060040526 alt=错误原因></p></div></article></main></div><footer><hr><p class=copyright>Copyright © 2026
+<a href=https://blog.karsa.info/><strong>Karsa Wang</strong></a>.
+This work is licensed under the
+<a href=http://creativecommons.org/licenses/by-sa/4.0/>CC BY-SA 4.0</a> license.</p><p class=builtWith>Built with
+<a href=http://www.gohugo.io/>Hugo</a>,
+using the theme
+<a href=https://gitlab.com/ian-s-mcb/smigle-hugo-theme>smigle</a>,
+which was influenced by the theme
+<a href=https://github.com/sumnerevans/smol>smol</a>.</p></footer></div></body></html>
