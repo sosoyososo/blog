@@ -1,4 +1,4 @@
-baseURL = 'http://blog.karsa.info/'
+baseURL = 'https://blog.karsa.info/'
 languageCode = 'en-us'
 title = "Karsa Wang 's Blog"
 theme = 'smigle'
