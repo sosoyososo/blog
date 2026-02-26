@@ -1,9 +1,7 @@
 themes/*
+!themes/smigle
 resources/
 nohup.out
 public/
 .hugo_build.lock
-.gitmodules 
-themes/
-.hugo_build.lock
-nohup.out
+.gitmodules
