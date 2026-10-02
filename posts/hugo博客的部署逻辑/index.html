@@ -1,0 +1,27 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="记录一些问题，也许对其他人也有所助益"><title>hugo博客的部署逻辑 | Karsa Wang 's Blog</title><link rel=stylesheet href=/css/reset.css><link rel=stylesheet href=/css/font.css><link rel=stylesheet href=/css/smigle.css><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/site.webmanifest><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"></head><body><div id=root><header><div id=brand><a class=icon-link href=https://blog.karsa.info/><img class=icon src=/images/brandIcon.svg></a><div class=text><a href=https://blog.karsa.info/><h1>Karsa Wang 's Blog</h1></a><h3>记录一些问题，也许对其他人也有所助益</h3></div></div><nav><a href=/><b>Home</b></a>
+|
+<a href=/posts><b>Posts</b></a>
+|
+<a href=/tags><b>Tags</b></a>
+|
+<a href=/about><b>About</b></a></nav><hr></header><div id=content><main><article><h1 class=title>hugo博客的部署逻辑</h1><div class=post-meta><strong><span>Posted on</span>
+<time>2026-10-02 17:58:00</time>
+</strong><span>• 129 words</span>
+<span>• 1 minute read</span></div><div class=content><p>之前写过一篇<a href=/posts/%E4%B8%80%E4%B8%AA%E6%AF%94%E8%BE%83%E8%AF%A1%E5%BC%82%E7%9A%84%E9%83%A8%E7%BD%B2%E9%80%BB%E8%BE%91/>《一个比较诡异的部署逻辑》</a>，记录的是一段很折腾的历史：为了绕开备案，域名解析到一台海外 vps，再由 nginx 反向代理到内地另一台机器上的 hugo 服务。绕了一大圈，代价是要自己盯着一台可能 OOM 的机器。</p><p>现在这套折腾终于可以收掉了，整个链路简单到有点无聊。</p><h2 id=现在的链路>现在的链路</h2><pre tabindex=0><code>本地写 markdown
+    ↓ git push
+GitHub Actions (master 分支触发)
+    ↓ hugo --minify
+编译成静态资源，push 到 gh-pages 分支
+    ↓
+GitHub Pages 提供访问
+    ↓
+Cloudflare DNS: blog.karsa.info → GitHub Pages
+</code></pre><p>整条链路上没有存储资源、没有 api server、也不需要自己管理证书。证书是 GitHub Pages 自动签发的 Let&rsquo;s Encrypt 证书，到期自动续期。</p><h2 id=几个关键点>几个关键点</h2><p><strong>内容仓库就是源仓库。</strong> markdown 直接写在 <code>content/posts/</code> 下，push 就完事，不需要在本地先 build 再传。<code>public/</code> 已经在 <code>.gitignore</code> 里，编译产物不进版本库。</p><p><strong>主题是 submodule。</strong> <code>themes/smigle</code> 通过 git submodule 引入，所以 workflow 里 checkout 那一步需要 <code>submodules: true</code>，否则构建会直接失败。这是一个很容易踩的坑——本地能跑，CI 上起不来，原因就是主题没拉下来。</p><p><strong>CNAME 放在 <code>static/</code>。</strong> hugo 构建时会把 <code>static/</code> 下的文件原样拷贝到输出目录，<code>static/CNAME</code> 就这样跟着进到了 gh-pages 分支根目录，GitHub Pages 靠它识别自定义域名。CNAME 必须在仓库里（而不是只在 Pages 后台设置），否则每次重新部署都有丢失的风险。</p><p><strong><code>baseURL</code> 必须和实际域名一致。</strong> <code>hugo.toml</code> 里写的是 <code>https://blog.karsa.info/</code>，它决定了生成页面里所有链接的绝对前缀。改域名的话，这里要同步改，否则页面内的跳转和静态资源路径会全错。</p><p><strong>hugo 需要 extended 版本。</strong> 主题用了 SCSS，标准版编译不了，workflow 里 <code>extended: true</code> 不能去掉。</p><h2 id=域名解析>域名解析</h2><p>Cloudflare 那边只需要给 <code>blog.karsa.info</code> 加一条 CNAME 记录，指向 <code>sosoyososo.github.io</code>（<code>&lt;user>.github.io</code>）。不需要开代理（灰云），让流量直接走 GitHub Pages 就行——这样 GitHub 才能签发证书，开了代理反而会拿不到。</p><p>DNS 生效之后，GitHub Pages 后台的 Custom domain 里填 <code>blog.karsa.info</code>，等它验证通过、自动签发证书即可。之后证书续期、HTTP/2、CDN 都不用操心。</p><h2 id=小结>小结</h2><p>之前那套方案的核心动机是"不备案"，而 GitHub Pages 本身就架在境外，天然没有这个问题。既然不需要在境内落地机器，也就没有了备案的约束，那么直接在境外托管静态站点就是最优解。绕了一大圈之后，答案其实一直很简单：<strong>能静态化的就静态化，然后交给平台</strong>。</p></div></article></main></div><footer><hr><p class=copyright>Copyright © 2026
+<a href=https://blog.karsa.info/><strong>Karsa Wang</strong></a>.
+This work is licensed under the
+<a href=http://creativecommons.org/licenses/by-sa/4.0/>CC BY-SA 4.0</a> license.</p><p class=builtWith>Built with
+<a href=http://www.gohugo.io/>Hugo</a>,
+using the theme
+<a href=https://gitlab.com/ian-s-mcb/smigle-hugo-theme>smigle</a>,
+which was influenced by the theme
+<a href=https://github.com/sumnerevans/smol>smol</a>.</p></footer></div></body></html>
