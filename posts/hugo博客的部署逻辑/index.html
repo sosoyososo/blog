@@ -7,7 +7,10 @@
 <a href=/about><b>About</b></a></nav><hr></header><div id=content><main><article><h1 class=title>hugo博客的部署逻辑</h1><div class=post-meta><strong><span>Posted on</span>
 <time>2026-10-02 17:58:00</time>
 </strong><span>• 129 words</span>
-<span>• 1 minute read</span></div><div class=content><p>之前写过一篇<a href=/posts/%E4%B8%80%E4%B8%AA%E6%AF%94%E8%BE%83%E8%AF%A1%E5%BC%82%E7%9A%84%E9%83%A8%E7%BD%B2%E9%80%BB%E8%BE%91/>《一个比较诡异的部署逻辑》</a>，记录的是一段很折腾的历史：为了绕开备案，域名解析到一台海外 vps，再由 nginx 反向代理到内地另一台机器上的 hugo 服务。绕了一大圈，代价是要自己盯着一台可能 OOM 的机器。</p><p>现在这套折腾终于可以收掉了，整个链路简单到有点无聊。</p><h2 id=现在的链路>现在的链路</h2><pre tabindex=0><code>本地写 markdown
+<span>• 1 minute read</span><div><span>Tags:</span>
+<a href=/tags/hugo>Hugo</a>,
+<a href=/tags/github>GitHub</a>,
+<a href=/tags/deployment>Deployment</a></div></div><div class=content><p>之前写过一篇<a href=/posts/%E4%B8%80%E4%B8%AA%E6%AF%94%E8%BE%83%E8%AF%A1%E5%BC%82%E7%9A%84%E9%83%A8%E7%BD%B2%E9%80%BB%E8%BE%91/>《一个比较诡异的部署逻辑》</a>，记录的是一段很折腾的历史：为了绕开备案，域名解析到一台海外 vps，再由 nginx 反向代理到内地另一台机器上的 hugo 服务。绕了一大圈，代价是要自己盯着一台可能 OOM 的机器。</p><p>现在这套折腾终于可以收掉了，整个链路简单到有点无聊。</p><h2 id=现在的链路>现在的链路</h2><pre tabindex=0><code>本地写 markdown
     ↓ git push
 GitHub Actions (master 分支触发)
     ↓ hugo --minify

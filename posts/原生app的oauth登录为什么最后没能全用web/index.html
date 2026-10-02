@@ -1,0 +1,21 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="记录一些问题，也许对其他人也有所助益"><title>原生 App 的 OAuth 登录，为什么最后没能全用 Web | Karsa Wang 's Blog</title><link rel=stylesheet href=/css/reset.css><link rel=stylesheet href=/css/font.css><link rel=stylesheet href=/css/smigle.css><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/site.webmanifest><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"></head><body><div id=root><header><div id=brand><a class=icon-link href=https://blog.karsa.info/><img class=icon src=/images/brandIcon.svg></a><div class=text><a href=https://blog.karsa.info/><h1>Karsa Wang 's Blog</h1></a><h3>记录一些问题，也许对其他人也有所助益</h3></div></div><nav><a href=/><b>Home</b></a>
+|
+<a href=/posts><b>Posts</b></a>
+|
+<a href=/tags><b>Tags</b></a>
+|
+<a href=/about><b>About</b></a></nav><hr></header><div id=content><main><article><h1 class=title>原生 App 的 OAuth 登录，为什么最后没能全用 Web</h1><div class=post-meta><strong><span>Posted on</span>
+<time>2026-10-02 18:10:00</time>
+</strong><span>• 124 words</span>
+<span>• 1 minute read</span><div><span>Tags:</span>
+<a href=/tags/oauth>OAuth</a>,
+<a href=/tags/mobile>Mobile</a>,
+<a href=/tags/web>Web</a></div></div><div class=content><p>这个项目本身是一个 Web 业务，后来用 Capacitor 封装成了 App。登录这块 OAuth 已经在 Web 端跑通了，所以最初的设想很顺理成章：App 里不做登录，直接复用 Web 的 OAuth。</p><p>流程设想是：App 跳转到 OAuth 授权 → 用户登录 → 授权服务 redirect 回 callback URL → App 接管，处理登录态。</p><p>前面几步都没问题，Web 实现完全够用。问题出在<strong>最后一跳</strong>。</p><h2 id=第一次尝试应用内浏览器>第一次尝试：应用内浏览器</h2><p>用应用内浏览器（SFSafariViewController / Chrome Custom Tab）承载整个 OAuth 流程。登录完成，授权服务 redirect 回 App 自己的 Universal Link / App Link。</p><p>结果：回不来。</p><p>原因是应用内浏览器和 App 属于同一个包。系统不允许从应用内浏览器程序化地跳回同包的 App，用户就卡在浏览器里了——登录明明成功了，但回不到 App。</p><h2 id=第二次尝试跳系统默认浏览器>第二次尝试：跳系统默认浏览器</h2><p>改用 <code>window.open(url, '_system')</code>，把 OAuth 放到系统默认浏览器里做。</p><p>这一步能跳出去，但授权服务的回调会落到系统默认浏览器。这时不同浏览器开始分化：</p><ul><li><strong>Safari</strong>：能正常跳回 App</li><li><strong>Chrome</strong>：跳不回，停在浏览器里</li></ul><p>也就是说，最后一跳能不能成，取决于用户系统默认浏览器是什么。这不是靠 Web 代码能控制的事情。</p><h2 id=为什么-web-做不到>为什么 Web 做不到</h2><p>最后一跳本质上是"浏览器要不要把当前 URL 交给 App"的决定，这个决定属于平台和浏览器，不属于 Web API。</p><p>Safari 对 Universal Link 的 App 切换支持完整，会提示或直接打开对应 App。而 Chrome（尤其在 iOS 上基于 WKWebView 封装）不会稳定地对 OAuth 回调链上的导航弹出"在 App 中打开"。更麻烦的是，Web 层面没有办法去检测、统一或者绕过这个行为。</p><p>所以结论是：Web 实现的 OAuth 可以覆盖整个流程，唯独没法保证最后那个回调稳定落到 App 里。而对原生 App 来说，这个保证恰恰是登录存在的意义。</p><h2 id=最终方案>最终方案</h2><p>没办法，OAuth 这一段改成用 native 插件实现。登录流程在原生上下文里跑，回调直接以原生 deep link 的形式回到 App，不依赖浏览器的 App 切换行为。前面几个步骤的 Web 复用也就到此为止了。</p><h2 id=回头看>回头看</h2><p>如果一开始就知道"最后一跳"是一个平台约束、Web 做不到，就不用在 Web 的 OAuth 上试这么久了。复用 Web 登录的想法本身没问题，问题的边界在登录的最后一步，而最后一步恰恰是最依赖平台行为的一步。</p></div></article></main></div><footer><hr><p class=copyright>Copyright © 2026
+<a href=https://blog.karsa.info/><strong>Karsa Wang</strong></a>.
+This work is licensed under the
+<a href=http://creativecommons.org/licenses/by-sa/4.0/>CC BY-SA 4.0</a> license.</p><p class=builtWith>Built with
+<a href=http://www.gohugo.io/>Hugo</a>,
+using the theme
+<a href=https://gitlab.com/ian-s-mcb/smigle-hugo-theme>smigle</a>,
+which was influenced by the theme
+<a href=https://github.com/sumnerevans/smol>smol</a>.</p></footer></div></body></html>
