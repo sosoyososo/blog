@@ -1,10 +1,35 @@
-<!doctype html><html lang=en><head><meta name=generator content="Hugo 0.157.0"><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="记录一些问题，也许对其他人也有所助益"><title>Karsa Wang 's Blog</title><link rel=stylesheet href=/css/reset.css><link rel=stylesheet href=/css/font.css><link rel=stylesheet href=/css/smigle.css><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/site.webmanifest><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"></head><body><div id=root><header><div id=brand><a class=icon-link href=https://blog.karsa.info/><img class=icon src=/images/brandIcon.svg></a><div class=text><a href=https://blog.karsa.info/><h1>Karsa Wang 's Blog</h1></a><h3>记录一些问题，也许对其他人也有所助益</h3></div></div><nav><a href=/><b>Home</b></a>
+<!doctype html><html lang=en><head><meta name=generator content="Hugo 0.167.0"><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="记录一些问题，也许对其他人也有所助益"><title>Karsa Wang 's Blog</title><link rel=stylesheet href=/css/reset.css><link rel=stylesheet href=/css/font.css><link rel=stylesheet href=/css/smigle.css><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/site.webmanifest><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"></head><body><div id=root><header><div id=brand><a class=icon-link href=https://blog.karsa.info/><img class=icon src=/images/brandIcon.svg></a><div class=text><a href=https://blog.karsa.info/><h1>Karsa Wang 's Blog</h1></a><h3>记录一些问题，也许对其他人也有所助益</h3></div></div><nav><a href=/><b>Home</b></a>
 |
 <a href=/posts><b>Posts</b></a>
 |
 <a href=/tags><b>Tags</b></a>
 |
-<a href=/about><b>About</b></a></nav><hr></header><div id=content><main><article class=summary><a href=https://blog.karsa.info/posts/%E6%A0%91%E8%8E%93%E6%B4%BE%E7%9B%B4%E6%92%AD%E6%96%B9%E6%A1%88%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/><h1 class=title>🌊 树莓派直播方案折腾记录</h1></a><div class=post-meta><strong><span>Posted on</span>
+<a href=/about><b>About</b></a></nav><hr></header><div id=content><main><article class=summary><a href=https://blog.karsa.info/posts/email-as-admin-dashboard/><h1 class=title>用 Email 代替简单的 Admin Dashboard</h1></a><div class=post-meta><strong><span>Posted on</span>
+<time>2026-10-02 00:00:00</time>
+</strong><span>• 347 words</span>
+<span>• 2 minute read</span><div><span>Tags:</span>
+<a href=/tags/backend>Backend</a>,
+<a href=/tags/saas>SaaS</a>,
+<a href=/tags/architecture>Architecture</a>,
+<a href=/tags/admin>Admin</a></div></div><div class=content><p><p>在最近做一个 App 的内容审核功能时，我发现了一个挺有意思的模式：</p><p><strong>有些简单的 Admin 操作，其实根本不需要做一个 Admin Dashboard。</strong></p><p>如果管理员只是偶尔收到一些待处理事项，然后对某个具体对象执行几个简单操作，那么 Email 本身就可以成为一个非常轻量的 Admin UI。</p><h2 id=一个实际的例子>一个实际的例子</h2><p>在这个项目里，有两个比较简单的后台业务。</p><h3 id=story-审核>Story 审核</h3><p>用户提交一条 Story：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-text data-lang=text><span style=display:flex><span>User
+</span></span><span style=display:flex><span>  ↓
+</span></span><span style=display:flex><span>POST /api/feedback
+</span></span><span style=display:flex><span>  ↓
+</span></span><span style=display:flex><span>feedback.status = pending
+</span></span></code></pre></div><p>服务器在几十秒内把待审核 Story 发到管理员邮箱：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-text data-lang=text><span style=display:flex><span>📖 New community story #123
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>John:
+</span></span><span style=display:flex><span>&#34;I finally reached my goal...&#34;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[ Approve ]    [ Reject ]
+</span></span></code></pre></div><p>管理员不需要登录后台。</p><p>点击按钮之后，链接携带一个有有效期的 signed token，服务器验证后直接执行对应操作：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-text data-lang=text><span style=display:flex><span>Email
+</span></span><span style=display:flex><span>  ↓
+</span></span><span style=display:flex><span>Signed Action Link
+</span></span><span style=display:flex><span>  ↓
+</span></span><span style=display:flex><span>Backend
+</span></span><span style=display:flex><span>  ↓
+</span></span><span style=display:flex><span>status = approved
+</span></span></code></pre></div><p>用户下一次刷新 App，就可以看到已经上线的 Story。</p></p><a href=https://blog.karsa.info/posts/email-as-admin-dashboard/>Read more...</a></div></article><article class=summary><a href=https://blog.karsa.info/posts/%E6%A0%91%E8%8E%93%E6%B4%BE%E7%9B%B4%E6%92%AD%E6%96%B9%E6%A1%88%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/><h1 class=title>🌊 树莓派直播方案折腾记录</h1></a><div class=post-meta><strong><span>Posted on</span>
 <time>2026-02-26 00:10:00</time>
 </strong><span>• 150 words</span>
 <span>• 1 minute read</span></div><div class=content><p><p>树莓派摄像头直播，尝试了多种方案，记录一下。</p></p><a href=https://blog.karsa.info/posts/%E6%A0%91%E8%8E%93%E6%B4%BE%E7%9B%B4%E6%92%AD%E6%96%B9%E6%A1%88%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/>Read more...</a></div></article><article class=summary><a href=https://blog.karsa.info/posts/nas%E6%90%AD%E5%BB%BA%E9%9F%B3%E4%B9%90%E4%B8%AD%E5%BF%83/><h1 class=title>🎵 自托管音乐中心搭建指南：aria2-pro + AriaNg + music_tag_web + Navidrome</h1></a><div class=post-meta><strong><span>Posted on</span>
