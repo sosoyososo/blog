@@ -5,3 +5,4 @@ nohup.out
 public/
 .hugo_build.lock
 .gitmodules
+docs/
